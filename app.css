@@ -1,0 +1,13 @@
+﻿body {
+    font-family: 'Segoe UI', sans-serif;
+}
+
+span {
+    font-style: italic;
+}
+
+#anagrammer {
+    background-color:black;
+    color:red;
+    width:50%;
+}

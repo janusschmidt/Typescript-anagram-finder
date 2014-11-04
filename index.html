@@ -1,0 +1,25 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Find anagrammer</title>
+    <link rel="stylesheet" href="app.css" type="text/css" />
+    <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js"></script>
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="computeAnagrams.js"></script>
+    <script src="findanagrammer.js"></script>
+</head>
+<body>
+    <h1>Find Anagrammer</h1>
+    <input id="anagramsubject" value="poultry outwits ants" />
+    <button id="buttonStart">start</button>
+    <button id="buttonStop">stop</button>
+    <div>
+        <div>antal fundne anagrammer: <span id="antalfundne">0</span></div>
+        <div>Sekunder algoritmen har været igang: <span id="antalsekunder">0</span> sekunder</div>
+        <h1>Anagrammer</h1>
+        <div id="anagrammer"></div>
+    </div>
+</body>
+</html>
