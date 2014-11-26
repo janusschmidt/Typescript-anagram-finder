@@ -36,7 +36,8 @@ $(function () {
                         annagrammerdiv.prepend('<div style="color:green;font-size:xx-large">' + data.anagram + '</div>');
                         worker.terminate();
                         clearInterval(timer);
-                    } else {
+                    }
+                    else {
                         annagrammerdiv.prepend('<div>' + data.anagram + '</div>');
                     }
                     $('#antalfundne').text(++antalFundne);

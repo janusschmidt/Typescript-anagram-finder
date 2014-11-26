@@ -16,31 +16,31 @@
         this.OKchars = phrase.replace(/ /g, '').split('');
         this.noOfCharsInAnagram = this.OKchars.length;
     }
-    //check om et ord eller anagram ikke indeholder forkerte eller for mange af en slags bogstaver
-    ComputeAnagrams.prototype.charsOk = function (str) {
+    //returnerer null hvis anagram indeholder for mange af en slags bogstaver
+    ComputeAnagrams.prototype.charsOk = function (str, okcharstmpIn) {
         var i = 0;
         var res = true;
-        var okcharstmp = this.OKchars.slice();
+        var okcharstmp = okcharstmpIn.slice();
         var c;
         var chars = str.split('');
 
         if (str.length === 0) {
-            return false;
+            return null;
         }
 
         while (c = chars.pop()) {
             if (c === '\'') {
                 continue;
             }
+
             i = okcharstmp.indexOf(c);
-            if (i > -1) {
-                okcharstmp.splice(i, 1);
-            } else {
-                res = false;
-                break;
+            if (i === -1) {
+                return null;
             }
+
+            okcharstmp.splice(i, 1);
         }
-        return res;
+        return okcharstmp;
     };
 
     ComputeAnagrams.prototype.convertAlfabetizedAnagramToRealAnagrams = function (alfabetisizedAnagram, preWords) {
@@ -97,28 +97,32 @@
         }
     };
 
-    ComputeAnagrams.prototype.getAnagrams = function (maxNoWordsInAnagram, wordsToTry, wordsInAnagram) {
+    ComputeAnagrams.prototype.getAnagrams = function (maxNoWordsInAnagram, wordsToTry, tmpCharsOk, wordsInAnagram) {
+        if (typeof tmpCharsOk === "undefined") { tmpCharsOk = this.OKchars; }
         if (typeof wordsInAnagram === "undefined") { wordsInAnagram = []; }
-        var tmp, tryWordsInAnagram, tmpword;
-        if (maxNoWordsInAnagram > 0 && wordsToTry.length > 0) {
+        var tmp, tryWordsInAnagram, anagramlength, word, newTmpCharsOk;
+        if (wordsToTry.length > 0) {
             tmp = wordsToTry.slice();
             do {
-                tryWordsInAnagram = wordsInAnagram.slice();
-                tryWordsInAnagram.push(tmp[0]);
+                word = tmp[0];
 
                 //forsøg at kombinere med flere ord via rekursion,
-                //hvis det ikke er et anagram og hvis de ord der forsøges med nu ikke er for lange
-                tmpword = tryWordsInAnagram.join('');
-                if ((maxNoWordsInAnagram === 1 && tmpword.length === this.noOfCharsInAnagram) || (maxNoWordsInAnagram > 1 && tmpword.length <= this.noOfCharsInAnagram)) {
-                    if (this.charsOk(tmpword)) {
-                        if (tmpword.length === this.noOfCharsInAnagram) {
+                //hvis det ikke er et anagram og hvis de ord der forsøges med nu ikke er invalide (forkerte chars eller for lange)
+                anagramlength = wordsInAnagram.join('').length + word.length;
+                if ((maxNoWordsInAnagram === 1 && anagramlength === this.noOfCharsInAnagram) || (maxNoWordsInAnagram > 1 && anagramlength <= this.noOfCharsInAnagram)) {
+                    newTmpCharsOk = this.charsOk(word, tmpCharsOk);
+                    if (newTmpCharsOk != null) {
+                        tryWordsInAnagram = wordsInAnagram.slice();
+                        tryWordsInAnagram.push(word);
+                        if (anagramlength === this.noOfCharsInAnagram) {
                             this.anagramFound(tryWordsInAnagram);
-                        } else {
-                            this.getAnagrams(maxNoWordsInAnagram - 1, tmp, tryWordsInAnagram);
+                        } else if (maxNoWordsInAnagram > 1) {
+                            this.getAnagrams(maxNoWordsInAnagram - 1, tmp, newTmpCharsOk, tryWordsInAnagram);
                         }
                     }
                 }
-            } while(tmp.shift());
+                tmp.shift();
+            } while(tmp.length > 0);
         }
     };
 
@@ -127,7 +131,7 @@
         for (var i = 0; i < dict.length; i++) {
             //fjern whitespace
             var word = dict[i].replace(/\s/g, '');
-            if (this.charsOk(word)) {
+            if (this.charsOk(word, this.OKchars) != null) {
                 oklistwords.push(word);
             }
         }
